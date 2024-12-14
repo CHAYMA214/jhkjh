@@ -9,41 +9,110 @@ import friend from "./friends.png";
 import team1 from "./team-01.png";
 import team2 from "./team-02.png";
 import team3 from "./team-03.png";
+import team4 from "./team-04.png";
 import { Link } from "react-router-dom";
-
+import { useAuth } from "../context/AuthContext";
+import { doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
+import { db } from "../fireba/firebase";
 export default function Challenge() {
-  const [openPopupId, setOpenPopupId] = useState(null); // Popup ouvert
-  const [challenges, setChallenges] = useState([
-  ]);
-  const [newChallenge, setNewChallenge] = useState({
+  const [isFormVisible, setIsFormVisible] = useState(false);
+  const [selectedChallengeId, setSelectedChallengeId] = useState(null);
+
+  const openForm = (challengeId) => {
+    setIsFormVisible(true);
+    setSelectedChallengeId(challengeId); // Track which challenge's details are open
+  };
+    const Enrol =() => {
+      const loadUserAata = async () => {
+        try {
+          const challengeRef = doc(db, "habit", currentUser.uid);
+          await setDoc(challengeRef, { challenges: updatedChallenges });
+          setChallenges(updatedChallenges);
+          setNewChallenge({ title: "", date: "", description: "", progress: 0, action: "" });
+        } catch (error) {
+          console.error("Error saving challenge:", error);
+        }
+      };
+    
+      useEffect(() => {
+        loadUserAata();
+      }, [currentUser]);
+    setIsFormVisible(false);
+    setSelectedChallengeId(null); // Reset the challenge id when closing the popup
+  };
+  const closeForm = () => {
+    setIsFormVisible(false);
+    setSelectedChallengeId(null); // Reset the challenge id when closing the popup
+  };
+  
+  const { currentUser } = useAuth();
+    const [newChallenge, setNewChallenge] = useState({
     title: "",
     date: "",
     description: "",
     progress: 0,
     action: "",
   });
-  const [searchQuery, setSearchQuery] = useState(""); // Recherche
-  const [filteredChallenges, setFilteredChallenges] = useState(challenges); // Défis filtrés
+  const mainchallenge=[{
+    id: 1,
+    title: "Elzero Dashboard",
+    date: "15/10/2021",
+    description: "Elzero Dashboard Project Design And Programming And Hosting",
+    action: "Learn new Language",
+    team: [team1, team2, team3, team4, team4],
+  },
+  {
+    id:2,
+    title: "Academy Portal",
+    date: "15/6/2022",
+    description: "Academy Portal Project Design And Programming",
+    action: "Go to Gym",
+    team: [team3, team1, team4],
+  },
+  {
+    id: 3,
+    title: "Chatting Application",
+    date: "15/6/2022",
+    description: "Chatting Application Project Design",
+    action: "Learn Design",
+    team: [team3, team2, team4],
+  },
+  {
+    id: 4,
+    title: "Ahmed Dashboard",
+    date: "15/6/2022",
+    description: "Ahmed Dashboard Project Design And Programming And Hosting",
+    action: "Stop smoking",
+    team: [team1, team2, team3, team4],
+  },
+  {
+    id: 5,
+    title: "Ahmed Portal",
+    date: "15/6/2022",
+    description: "Ahmed Portal Project Design And Programming",
+    action: "Play football",
+    team: [team3, team4, team1],
+  }]
 
-  // Filtrer les défis à chaque modification de la recherche ou des défis
-  useEffect(() => {
-    if (searchQuery.trim() === "") {
-      setFilteredChallenges(challenges); // Afficher tous les défis si pas de recherche
-    } else {
-      const query = searchQuery.toLowerCase();
-      setFilteredChallenges(
-        challenges.filter(
-          (challenge) =>
-            challenge.title.toLowerCase().includes(query) ||
-            challenge.description.toLowerCase().includes(query) ||
-            challenge.action.toLowerCase().includes(query)
-        )
-      );
+  const [challenges, setChallenges] = useState([]);
+  const loadUserData = async () => {
+    try {
+     const challengeRef = doc(db, "challenge", currentUser.uid);
+      const challengeSnap = await getDoc(challengeRef);
+
+      if (challengeSnap.exists()) {
+        setChallenges(challengeSnap.data().challenges || []);
+      }
+    } catch (err) {
+      console.error("Failed to load data:", err);
     }
-  }, [searchQuery, challenges]);
+  };
 
-  // Ajouter un nouveau défi
-  const handleAddChallenge = () => {
+  useEffect(() => {
+    loadUserData();
+  }, [currentUser]);
+  // Add a new challenge
+  const handleAddChallenge = async () => {
     if (
       !newChallenge.title ||
       !newChallenge.date ||
@@ -54,18 +123,25 @@ export default function Challenge() {
       return;
     }
 
-    const newId = challenges.length + 1;
-    setChallenges([
+    const updatedChallenges = [
       ...challenges,
       {
-        id: newId,
+        id: challenges.length + 1,
         ...newChallenge,
-        team: [team1, team2], // Équipe par défaut
+        team: [team4]
+        ,
       },
-    ]);
-    setNewChallenge({ title: "", date: "", description: "", progress: 0, action: "" }); // Réinitialiser
-  };
+    ];
 
+    try {
+      const challengeRef = doc(db, "challenge", currentUser.uid);
+      await setDoc(challengeRef, { challenges: updatedChallenges });
+      setChallenges(updatedChallenges);
+      setNewChallenge({ title: "", date: "", description: "", progress: 0, action: "" });
+    } catch (error) {
+      console.error("Error saving challenge:", error);
+    }
+  };
   return (
     <div className="page d-flex">
       {/* Sidebar */}
@@ -108,17 +184,7 @@ export default function Challenge() {
       {/* Contenu principal */}
       <div className="content w-full">
         <h1 className="p-relative">Community Challenges</h1>
-
-        {/* Recherche */}
-        <input
-          type="search"
-          placeholder="Search challenges..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="search-bar d-block mb-20 p-10 rad-6"
-        />
-
-        {/* Formulaire d'ajout */}
+{isFormVisible && (
         <div className="add-challenge-form bg-white p-20 rad-6 m-20">
           <h3>Add a New Challenge</h3>
           <input
@@ -154,19 +220,24 @@ export default function Challenge() {
           <button onClick={handleAddChallenge} className="btn bg-blue c-white">
             Add Challenge
           </button>
-        </div>
-
-        {/* Liste des défis */}
+          <button className="btn bg-blue c-white" onClick={closeForm} style={{margin:'5px'}}>
+              Close
+            </button>
+        </div>)}
+        <button className="btn bg-blue c-white" onClick={openForm} style={{ position: 'absolute',top: '20px',
+  right: '20px'}}>
+          +
+        </button>
         <div className="projects-page d-grid m-20 gap-20">
-          {filteredChallenges.map((challenge) => (
+          {challenges.map((challenge) => (
             <div key={challenge.id} className="project bg-white p-20 rad-6 p-relative">
               <span className="date fs-13 c-grey">{challenge.date}</span>
               <h4 className="m-0">{challenge.title}</h4>
               <p className="c-grey mt-10 mb-10 fs-14">{challenge.description}</p>
               <div className="team">
-                {challenge.team.map((member, index) => (
+                {challenge.team.map((team2, index) => (
                   <a key={index} href="#!">
-                    <img src={member} alt="Team Member" />
+                    <img src={team2} />
                   </a>
                 ))}
               </div>
@@ -174,27 +245,59 @@ export default function Challenge() {
                 <span className="fs-13 rad-6 bg-eee">{challenge.action}</span>
               </div>
               <button
-                className="see-more d-block fs-14 bg-blue c-white w-fit btn-shape"
-                onClick={() => setOpenPopupId(challenge.id)}
-              >
+                className="see-more d-block fs-14 bg-blue c-white w-fit btn-shape">
                 See More..
               </button>
-              {openPopupId === challenge.id && (
-                <div className="popup d-flex p-20 bg-eee">
-                  <h2 className="mt-0 mb-10 p-10">Challenge Details</h2>
-                  <p className="c-black mt-10 mb-10 fs-14">{challenge.description}</p>
-                  <button
-                    className="close d-block fs-14 bg-blue c-white w-fit btn-shape"
-                    onClick={() => setOpenPopupId(null)}
-                  >
-                    Close
-                  </button>
-                </div>
-              )}
             </div>
           ))}
-        </div>
+  {mainchallenge.map((challenge) => (
+  <div key={challenge.id} className="projects-page d-grid m-20 gap-20">
+    <div className="project bg-white p-20 rad-6 p-relative">
+      <span className="date fs-13 c-grey">{challenge.date}</span>
+      <h4 className="m-0">{challenge.title}</h4>
+      <p className="c-grey mt-10 mb-10 fs-14">{challenge.description}</p>
+      <div className="team">
+        {challenge.team.map((team2, index) => (
+          <a key={index} href="#!">
+            <img src={team2} alt="Team member" />
+          </a>
+        ))}
       </div>
+      <div className="do d-flex">
+        <span className="fs-13 rad-6 bg-eee">{challenge.action}</span>
+      </div>
+      <button
+        className="see-more d-block fs-14 bg-blue c-white w-fit btn-shape"
+        onClick={() => openForm(challenge.id)} // Pass the challenge id
+      >
+        See More..
+      </button>
     </div>
+
+    {/* Show the popup for the specific challenge */}
+    {isFormVisible && selectedChallengeId === challenge.id && (
+      <div className="popup d-flex p-20 bg-eee" id={`popup-${challenge.id}`}>
+        <h2 className="mt-0 mb-10 p-10">Challenge Details</h2>
+        <input
+          className="enrol d-block fs-14 bg-blue c-white w-fit btn-shape"
+          type="submit"
+          value="Enroll"
+          style={{ margin: '5px' }}
+          onClick={() => Enrol(challenge.id)} // Handle enroll logic
+        />
+        <input
+          className="close d-block fs-14 bg-blue c-white w-fit btn-shape"
+          type="submit"
+          value="Close"
+          style={{ margin: '5px' }}
+          onClick={closeForm}
+        />
+      </div>
+    )}
+  </div>
+))}
+            </div>
+            </div>
+      </div>
   );
 }

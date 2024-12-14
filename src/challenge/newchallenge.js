@@ -25,6 +25,8 @@ function FilterPage() {
         <option value="learn">Learn New Language</option>
         <option value="gym">Go to Gym</option>
         <option value="design">Learn Design</option>
+        <input type="submit" value="See More.." class="see-more
+                 d-block fs-14 bg-blue c-white w-fit btn-shape" onclick="OpenPopup(1)"/>
       </select>
       <button onClick={handleFilter} className="btn bg-blue c-white">
         Apply Filter

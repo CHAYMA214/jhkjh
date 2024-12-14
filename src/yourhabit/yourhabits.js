@@ -20,83 +20,28 @@ export default function Habit() {
                         <Link to="/setting" className=" d-flex align-center fs-14 c-black rad-6 p-10"><img src={setting} style={{ width: '24px' }} /><span>Setting</span></Link>
                     </li>
                     <li>
-                        <Link to="/yourhabits" className=" d-flex align-center fs-14 c-black rad-6 p-10"><img src={change} style={{ width: '24px' }} /><span>habit</span></Link>
+                        <Link to="/yourhabits" className=" d-flex align-center fs-14 c-black rad-6 p-10"><img src={change} style={{ width: '24px' }} /><span>Habit</span></Link>
                     </li>
                     <li>
-                        <Link to="/challenges" className=" d-flex align-center fs-14 c-black rad-6 p-10"><img src={multipe} style={{ width: '24px' }} /><span>challenge</span></Link>
+                        <Link to="/challenges" className=" d-flex align-center fs-14 c-black rad-6 p-10"><img src={multipe} style={{ width: '24px' }} /><span>Challenge</span></Link>
                     </li>
                     <li>
-                        <Link to="/friends" className=" d-flex align-center fs-14 c-black rad-6 p-10"><img src={friend} style={{ width: '24px' }} /><span>friends</span></Link>
+                        <Link to="/friends" className=" d-flex align-center fs-14 c-black rad-6 p-10"><img src={friend} style={{ width: '24px' }} /><span>Friends</span></Link>
                     </li>
                 </ul>
-            </div>
-            <div class="content w-full">
-        <div class="habit-sections">
-          <div id="currentHabits" class="habit-box">
-            <h2>Current Habits</h2>
-            <div id="habitsContainer">
-            </div>
-          </div>
-          <div id="completedHabits" class="habit-box">
-            <h2>Completed Habits</h2>
-            <div id="completedHabitsContainer">
-            </div>
-          </div>
-        </div>
-
-        <button id="openPopup" class="add-habit-btn">Add New Habit</button>
-        <div id="popup" class="popup">
-          <div class="popup-content">
-            <span class="close" id="closePopup">&times;</span>
-            <h2>Add New Habit</h2>
-            <form id="habitForm">
-              <div class="labels">
-                <input
-                  type="text"
-                  id="habitName"
-                  placeholder="Enter habit name"
-                  required
-                  class="input-form"
-                />
-                <label for="habitName" class="form-label">Habit Name:</label>
-              </div>
-
-
-                    <div class="labels">
-                        <label style={{ color: '#789DBC', for: 'goal' }}>Goal:</label>
-                        <div class="goal-inputs">
-                            <input class="input-form" type="number" id="goal" min="1" value="1" required />
-                            <select id="goalType" style={{ color: '#aaa', for: 'goal' }}>
-                                <option value="times">Times</option>
-                                <option value="minutes">Minutes</option>
-                                <option value="minutes">Hours</option>
-                            </select>
-                            <select id="goalFrequency" style={{ color: '#aaa', for: 'goal' }}>
-                                <option value="day">Per Day</option>
-                                <option value="week">Per Week</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="labels">
-                        <input
-                            class="input-form"
-                            type="text"
-                            id="reminder"
-                            placeholder="e.g., Drink water at 10 AM" />
-                        <label for="reminder" class="form-label">Reminder:</label>
-                    </div>
-                    <div class="popup-buttons">
-                        <button type="button" id="cancelButton" class="btn">
-                            Cancel
-                        </button>
-                        <button type="submit" id="saveButton" class="btn btn-primary">
-                            Save
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    </div>
+                </div>
+         <div className="content w-full">
+      
+         
+         
+          <h1 className="p-relative">Profile</h1>
+          <div className="wrapper d-grid gap-20"> 
+        <div className="tasks p-20 bg-white rad-10">
+        <h2 className="m-0">current habit</h2>
+          </div>  
+          </div>  
+          </div>  
+          </div>  
+         
     );
     };
